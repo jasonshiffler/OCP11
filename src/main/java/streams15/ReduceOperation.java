@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 public class ReduceOperation {
 
     public static void main(String[] args) {
-      
+
     }
 
     //Has an identity value and an accumulator
