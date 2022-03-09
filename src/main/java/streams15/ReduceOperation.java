@@ -1,11 +1,13 @@
 package streams15;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public class ReduceOperation {
 
     public static void main(String[] args) {
+        threeParamReducerSerial();
 
     }
 
@@ -21,10 +23,10 @@ public class ReduceOperation {
     }
 
     //Has an identity value, accumulator, and combiner. Useful for parallel reductions. The accumulator can handle
-    //mixed data types if needed using the identity value and each value from the stream. The combiner operators on all
+    //mixed data types if needed using the identity value and each value from the stream. The combiner operates on
     //of the results from the accumulator operations
-    //Accumulator - performs an operation on the identity and each stream value
-    //Combiner - performs operations on all of the accumulator results.
+    //Accumulator - Executes a BiFunction using the identity and each stream value
+    //Combiner - Executes a BinaryOperator to merge the accumulator results from the different threads into a single result.
     private static void threeParamReducer() {
         int result = Stream.of("Hello", "Goodbye")
                 .parallel()
@@ -34,9 +36,26 @@ public class ReduceOperation {
     //Accumulator results: "identityHello", "identityGoodbye"
     //Combiner result: "identityHelloidentityGoodbye"
     private static void threeParamReducer2() {
-        String result = Stream.of("Hello", "Goodbye")
-                .parallel()
+        String result = List.of("Hello", "Goodbye")
+                .parallelStream()
                 .reduce("identity", (i, s) -> i + s, (s1, s2) -> s1 + s2 );
+
+        System.out.println(result);
+    }
+
+    //Accumulator results: "identityHelloGoodbye". The accumulator operates on all the data within a single thread
+    //Combiner result: Since this is a single threaded steram there is only one thread the combiner never runs since
+    //its function is to combine the results from different threads.
+
+    private static void threeParamReducerSerial() {
+        String result = Stream.of("Hello", "Goodbye")
+                .reduce("identity", (i, s) -> {
+                    System.out.println("Accumulator - Runs twice");
+                    return i + s;
+                }, (s1, s2) -> {
+                    System.out.println("Combiner - Never runs");
+                    return s1 + s2;
+                });
 
         System.out.println(result);
     }
