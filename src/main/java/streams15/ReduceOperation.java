@@ -8,7 +8,6 @@ public class ReduceOperation {
 
     public static void main(String[] args) {
         threeParamReducerSerial();
-
     }
 
     //Has an identity value and an accumulator
