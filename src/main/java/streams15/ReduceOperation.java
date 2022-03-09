@@ -44,7 +44,7 @@ public class ReduceOperation {
     }
 
     //Accumulator results: "identityHelloGoodbye". The accumulator operates on all the data within a single thread
-    //Combiner result: Since this is a single threaded steram there is only one thread the combiner never runs since
+    //Combiner result: Since this is a single threaded stream there is only one thread the combiner never runs since
     //its function is to combine the results from different threads.
 
     private static void threeParamReducerSerial() {
