@@ -1,11 +1,11 @@
 package streams15;
 
 import java.util.Comparator;
-import java.util.DoubleSummaryStatistics;
-import java.util.IntSummaryStatistics;
 import java.util.LinkedList;
-import java.util.LongSummaryStatistics;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -14,20 +14,49 @@ import java.util.stream.Stream;
 public class CollectingResults {
 
     public static void main(String[] args) {
+        groupingByExamples();
+    }
 
-        //Creating Collections
-        Stream.of("Hello", "goodbye").collect(Collectors.toList());
-        Stream.of("Hello", "goodbye").collect(Collectors.toSet());
-        Stream.of("Hello", "goodbye").collect(Collectors.toCollection(LinkedList::new));
-        Stream.of("Hello", "goodbye").collect(Collectors.toCollection(TreeSet::new));
-
+    private static void collectFunctions() {
         String joinedStream = Stream.of("Hello", "goodbye").collect(Collectors.joining());
         String joinedStreamWithDelimiter = Stream.of("Hello", "goodbye").collect(Collectors.joining("+"));
 
         Optional<String> maxValue = Stream.of("Hello", "goodbye").collect(Collectors.maxBy(Comparator.naturalOrder()));
         Optional<String> minValue = Stream.of("Hello", "goodbye").collect(Collectors.minBy(Comparator.naturalOrder()));
+    }
 
-        //Math Collection Operations
+    private static void creatingCollectionsFromStreams() {
+        Stream.of("Hello", "goodbye").collect(Collectors.toList());
+        Stream.of("Hello", "goodbye").collect(Collectors.toSet());
+        Stream.of("Hello", "goodbye").collect(Collectors.toCollection(LinkedList::new));
+        Stream.of("Hello", "goodbye").collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    //Grouping By - Optional Map Type Supplier to change Map Type Implementation and Downstream Collector to adjust the collection type within the Map
+    //First argument of grouping by changes the key, second does the value
+    private static void groupingByExamples() {
+        Map<Integer, List<String>> groupedBy = Stream.of("Hello", "goodbye", "stuff").collect(Collectors.groupingBy(String::length));
+        Map<Integer, Set<String>> groupedBySet = Stream.of("Hello", "goodbye", "stuff").collect(Collectors.groupingBy(String::length, Collectors.toSet()));
+        TreeMap<Integer, Set<String>> groupedTreeBySet = Stream.of("Hello", "goodbye", "stuff").collect(Collectors.groupingBy(String::length, TreeMap::new, Collectors.toSet()));
+
+        System.out.println(groupedBy);
+        System.out.println(groupedBySet);
+        System.out.println(groupedTreeBySet);
+
+        //Can use a downstream collector to transform each collection if needed
+        Map<Integer, Long> groupedByLong = Stream.of("Hello", "goodbye", "stuff").collect(Collectors.groupingBy(String::length, Collectors.counting()));
+        System.out.println(groupedByLong);
+    }
+
+    private static void partitioningByExamples() {
+        Map<Boolean, List<String>> partBy = Stream.of("Hello", "goodbye", "stuff").collect(Collectors.partitioningBy(str -> str.length() < 6));
+        Map<Boolean, Set<String>> partBySet = Stream.of("Hello", "goodbye", "stuff").collect(Collectors.partitioningBy(str -> str.length() < 6, Collectors.toSet()));
+
+        System.out.println(partBy);
+        System.out.println(partBySet);
+    }
+
+    private static void collectMathOperations() {
         var averageDouble = Stream.of("Hello", "goodbye").collect(Collectors.averagingDouble(String::length));
         var averageInt = Stream.of("Hello", "goodbye").collect(Collectors.averagingInt(String::length));
         var averageLong = Stream.of("Hello", "goodbye").collect(Collectors.averagingLong(String::length));
@@ -41,13 +70,8 @@ public class CollectingResults {
         var longSummaryStatistics = Stream.of("Hello", "goodbye").collect(Collectors.summarizingLong(String::length));
 
         long numElements = Stream.of("Hello", "goodbye").collect(Collectors.counting());
-
-        //Grouping By - Optional Map Type Supplier and Downstream Collector
-        var groupedBy = Stream.of("Hello", "goodbye", "thing", "stuff").collect(Collectors.groupingBy(String::length));
-        var groupedBySet = Stream.of("Hello", "goodbye", "thing", "stuff").collect(Collectors.groupingBy(String::length, Collectors.toSet()));
-        var groupedTreeBySet = Stream.of("Hello", "goodbye", "thing", "stuff").collect(Collectors.groupingBy(String::length, TreeMap::new, Collectors.toSet()));
-
-
     }
+
+
 }
 
